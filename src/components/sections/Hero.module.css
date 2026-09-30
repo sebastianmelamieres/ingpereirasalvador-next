@@ -1,0 +1,43 @@
+/* Entrada de la portada: al cargar, el contenido aparece escalonado acompañando a los arcos.
+   Solo CSS. "backwards" (y no "both") para que al terminar no bloquee los hover de los botones. */
+.enter {
+  animation: enter 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+
+.eyebrow {
+  animation-delay: 0.25s;
+}
+
+.title {
+  animation-name: enter-title;
+  animation-duration: 1.1s;
+  animation-delay: 0.4s;
+}
+
+.text {
+  animation-delay: 0.65s;
+}
+
+.actions {
+  animation-delay: 0.85s;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@keyframes enter-title {
+  from {
+    opacity: 0;
+    transform: translateY(32px) scale(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enter {
+    animation: none;
+  }
+}

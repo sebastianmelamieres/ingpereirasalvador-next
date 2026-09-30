@@ -1,0 +1,113 @@
+/* Tarjetas de servicios (.service del original).
+   Efectos que en Tailwind serían ilegibles: pseudo-elementos de oscurecido,
+   revelado de la descripción y estados combinados (hover / foco / toque). */
+
+/* Todas las tarjetas: sombra y leve elevación al pasar el mouse.
+   Sin media (hover: hover), igual que el original. */
+.card {
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 10px 30px -12px rgba(46, 73, 152, 0.35);
+  transform: translateY(-2px);
+}
+
+/* Tarjeta con foto: al frente la foto con el título. Con hover (mouse), foco de teclado
+   o un toque en pantallas táctiles, la foto se desenfoca, se oscurece y aparece la descripción. */
+.photo {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 380px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition:
+    filter 0.5s ease,
+    transform 0.5s ease;
+}
+
+/* Degradé fijo desde abajo para que el título se lea siempre */
+.photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    to top,
+    rgba(16, 24, 54, 0.92) 0%,
+    rgba(22, 34, 76, 0.55) 30%,
+    rgba(22, 34, 76, 0.1) 60%,
+    rgba(22, 34, 76, 0) 100%
+  );
+}
+
+/* Velo que se suma al activar, para que la descripción tenga contraste */
+.photo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: rgba(16, 24, 54, 0.55);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+/* La descripción arranca colapsada (fila de alto 0) y se despliega */
+.desc {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.45s ease,
+    opacity 0.35s ease;
+}
+
+.desc > p {
+  min-height: 0;
+  overflow: hidden;
+  transition: margin-top 0.45s ease;
+}
+
+@media (hover: hover) {
+  .photo:hover .image {
+    filter: blur(5px);
+    transform: scale(1.08);
+  }
+  .photo:hover::before {
+    opacity: 1;
+  }
+  .photo:hover .desc {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+  .photo:hover .desc > p {
+    margin-top: 0.75rem;
+  }
+}
+
+.photo:is(:focus-visible, [data-active]) .image {
+  filter: blur(5px);
+  transform: scale(1.08);
+}
+.photo:is(:focus-visible, [data-active])::before {
+  opacity: 1;
+}
+.photo:is(:focus-visible, [data-active]) .desc {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.photo:is(:focus-visible, [data-active]) .desc > p {
+  margin-top: 0.75rem;
+}

@@ -1,0 +1,28 @@
+/* Botón flotante de WhatsApp (.wa-float del original): estados hover/foco.
+   Sin media (hover: hover), igual que el original. */
+.icon {
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.35);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.text {
+  box-shadow: 0 6px 20px -8px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: translateX(8px);
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+  pointer-events: none;
+}
+
+.float:is(:hover, :focus-visible) .icon {
+  transform: scale(1.06);
+  box-shadow: 0 10px 28px -6px rgba(0, 0, 0, 0.4);
+}
+
+.float:is(:hover, :focus-visible) .text {
+  opacity: 1;
+  transform: none;
+}

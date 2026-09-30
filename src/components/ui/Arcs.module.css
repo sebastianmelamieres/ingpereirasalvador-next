@@ -1,0 +1,65 @@
+/* Arcos animados (identidad de marca). Se usan en la portada y, más adelante, en contacto.
+   1) Al aparecer, cada anillo se dibuja, del interior al exterior.
+   2) Después, una onda suave recorre los anillos en bucle. */
+.arcs {
+  overflow: visible;
+  --draw-start: 0.15s;
+  --wave-start: 1.8s;
+}
+
+/* Segundo juego de arcos (esquina inferior derecha de la portada): arranca un poco después */
+.late {
+  --draw-start: 0.45s;
+  --wave-start: 2.4s;
+}
+
+.arcs circle {
+  stroke-dasharray: 25 100; /* solo el cuarto de círculo visible */
+  stroke-dashoffset: 25; /* arranca "sin dibujar" */
+  animation:
+    draw 1.1s cubic-bezier(0.65, 0, 0.35, 1) forwards,
+    wave 3.6s ease-in-out infinite;
+  animation-delay:
+    calc(var(--i) * 0.09s + var(--draw-start)),
+    calc(var(--i) * 0.22s + var(--wave-start));
+}
+
+/* Orden de cada anillo, del exterior (6) al interior (0) */
+.arcs circle:nth-child(1) { --i: 6; }
+.arcs circle:nth-child(2) { --i: 5; }
+.arcs circle:nth-child(3) { --i: 4; }
+.arcs circle:nth-child(4) { --i: 3; }
+.arcs circle:nth-child(5) { --i: 2; }
+.arcs circle:nth-child(6) { --i: 1; }
+.arcs circle:nth-child(7) { --i: 0; }
+
+/* Arcos de contacto: la animación espera a que la sección entre en pantalla (ArcsOnView) */
+.paused circle {
+  animation-play-state: paused;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  35% {
+    opacity: 0.35;
+  }
+  60% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arcs circle {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}

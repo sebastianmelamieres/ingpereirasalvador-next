@@ -1,0 +1,7 @@
+# Next.js con static export: `npm run build` genera el sitio en out/
+[build]
+  command = "npm run build"
+  publish = "out"
+
+[build.environment]
+  NODE_VERSION = "22"

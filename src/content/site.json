@@ -1,0 +1,201 @@
+{
+  "site": {
+    "name": "Ing. Pereira Salvador",
+    "url": "https://ingpereirasalvador.com",
+    "title": "Ing. Pereira Salvador | Consultoría en Ingeniería",
+    "description": "Consultoría en ingeniería en Uruguay: proyectos hidráulicos, acondicionamiento térmico, diseño mecánico, habilitaciones de Bomberos (DNB), avales técnicos vehiculares y sistemas contra incendio.",
+    "shareDescription": "Proyectos hidráulicos, habilitaciones DNB, sistemas contra incendio, diseño mecánico y más.",
+    "locale": "es_UY",
+    "country": "Uruguay",
+    "logo": {
+      "default": "/images/brand/logotipo-azul.svg",
+      "inverted": "/images/brand/logotipo-blanco.svg"
+    },
+    "ogImage": {
+      "src": "/images/og-image.jpg",
+      "width": 1200,
+      "height": 630
+    },
+    "owner": {
+      "name": "Tomás Pereira Salvador",
+      "jobTitle": "Ingeniero Industrial Mecánico"
+    }
+  },
+
+  "contact": {
+    "phone": {
+      "display": "(+598) 91 271 063",
+      "number": "+59891271063"
+    },
+    "email": "info@ingpereirasalvador.com",
+    "whatsapp": {
+      "number": "59891271063",
+      "message": "Hola Tomás, vi tu página web y quería hacerte una consulta."
+    },
+    "area": ""
+  },
+
+  "navigation": {
+    "homeHref": "#inicio",
+    "homeLabel": "Ir al inicio",
+    "logoAlt": "Ing. Pereira Salvador — Consultoría en Ingeniería",
+    "openMenuLabel": "Abrir menú",
+    "closeMenuLabel": "Cerrar menú",
+    "whatsappLabel": "WhatsApp",
+    "items": [
+      { "label": "Servicios", "href": "#servicios" },
+      { "label": "Cómo trabajo", "href": "#proceso" },
+      { "label": "Sobre mí", "href": "#sobre" },
+      { "label": "Trabajos", "href": "#trabajos" },
+      { "label": "Contacto", "href": "#contacto" }
+    ]
+  },
+
+  "hero": {
+    "id": "inicio",
+    "eyebrow": "Consultoría en ingeniería",
+    "title": "Soluciones técnicas para instalaciones, obras y habilitaciones.",
+    "text": "Proyectos hidráulicos, sistemas contra incendio, habilitaciones de Bomberos, diseño mecánico y más.",
+    "whatsappCta": "Consultar por WhatsApp",
+    "secondaryCta": { "label": "Ver servicios", "href": "#servicios" }
+  },
+
+  "services": {
+    "id": "servicios",
+    "eyebrow": "Servicios",
+    "title": "¿En qué te puedo ayudar?",
+    "items": [
+      {
+        "title": "Proyectos hidráulicos",
+        "description": "Diseño y cálculo de instalaciones sanitarias, de agua y desagües para viviendas, comercios e industrias.",
+        "image": "/images/services/hidraulica.webp"
+      },
+      {
+        "title": "Acondicionamiento térmico",
+        "description": "Cálculo y proyecto de calefacción, ventilación y climatización para lograr ambientes confortables y eficientes.",
+        "image": "/images/services/termico.webp"
+      },
+      {
+        "title": "Diseño mecánico",
+        "description": "Diseño y cálculo de piezas, estructuras y equipos, con planos y memorias técnicas.",
+        "image": "/images/services/mecanico.webp"
+      },
+      {
+        "title": "Habilitaciones DNB",
+        "description": "Gestión completa de la habilitación ante la Dirección Nacional de Bomberos: proyecto, trámite y seguimiento.",
+        "image": "/images/services/habilitacion.webp"
+      },
+      {
+        "title": "Avales técnicos vehiculares",
+        "description": "Informes y avales técnicos firmados por ingeniero para modificaciones y regularización de vehículos.",
+        "image": "/images/services/vehicular.webp"
+      },
+      {
+        "title": "Sistemas hidráulicos contra incendio",
+        "description": "Montaje de redes de hidrantes, bocas de incendio y equipos de bombeo según normativa vigente.",
+        "image": "/images/services/incendio.webp",
+        "imagePosition": "80% center"
+      },
+      {
+        "title": "Mantenimiento en general",
+        "description": "Mantenimiento preventivo y correctivo de instalaciones y equipos para que sigan funcionando y en regla.",
+        "image": "/images/services/mantenimiento.webp"
+      }
+    ],
+    "closingCard": {
+      "title": "¿Tenés otro proyecto?",
+      "description": "Contame qué necesitás y lo vemos juntos.",
+      "href": "#contacto"
+    }
+  },
+
+  "process": {
+    "id": "proceso",
+    "eyebrow": "Cómo trabajo",
+    "title": "Un proceso claro, de la primera consulta a la aprobación",
+    "steps": [
+      {
+        "title": "Me contás qué necesitás",
+        "description": "Por WhatsApp, mail o el formulario. Con una breve descripción ya puedo orientarte."
+      },
+      {
+        "title": "Visita y presupuesto",
+        "description": "Voy al lugar si hace falta, relevo la situación y te paso un presupuesto claro, sin sorpresas."
+      },
+      {
+        "title": "Proyecto y gestión",
+        "description": "Hago los cálculos, planos y documentación, y me encargo de los trámites ante los organismos que correspondan (Bomberos, Intendencia, etc.)."
+      },
+      {
+        "title": "Entrega y seguimiento",
+        "description": "Te entrego todo aprobado y en regla, y quedo disponible para mantenimiento o renovaciones."
+      }
+    ],
+    "whatsappCta": "Empezar con el paso 1"
+  },
+
+  "about": {
+    "id": "sobre",
+    "eyebrow": "Sobre mí",
+    "title": "Ing. Tomás Pereira Salvador",
+    "image": "/images/about/tomas.jpg",
+    "paragraphs": [
+      "Soy Ingeniero Industrial Mecánico, egresado de la Facultad de Ingeniería de la Universidad de la República, con perfil en Diseño Mecánico y Materiales.",
+      "Desde 2021 trabajo en la industria: mantenimiento de equipos e instalaciones, proyectos industriales, presupuestación y dirección de obra. Esa experiencia en campo es la que aplico en cada proyecto.",
+      "Además soy docente en el Instituto de Ensayo de Materiales de la Facultad de Ingeniería, lo que me mantiene en contacto permanente con la formación técnica."
+    ],
+    "facts": [
+      { "value": "Ing. Industrial Mecánico", "label": "Universidad de la República" },
+      { "value": "+4 años", "label": "De experiencia en la industria" },
+      { "value": "Docente", "label": "Facultad de Ingeniería, Udelar" }
+    ]
+  },
+
+  "projects": {
+    "id": "trabajos",
+    "eyebrow": "Trabajos",
+    "title": "Proyectos realizados",
+    "items": []
+  },
+
+  "contactSection": {
+    "id": "contacto",
+    "eyebrow": "Contacto",
+    "title": "Hablemos de tu proyecto",
+    "text": "Escribime por WhatsApp o por mail y te respondo a la brevedad.",
+    "whatsappCta": "Escribir por WhatsApp",
+    "labels": {
+      "phone": "Teléfono",
+      "email": "Email",
+      "area": "Zona"
+    }
+  },
+
+  "contactForm": {
+    "title": "O dejame tu consulta",
+    "fields": {
+      "name": { "label": "Nombre" },
+      "email": { "label": "Email" },
+      "phone": { "label": "Teléfono (opcional)" },
+      "service": { "label": "¿Sobre qué es tu consulta?", "otherOption": "Otro" },
+      "message": { "label": "Mensaje", "placeholder": "Contame brevemente qué necesitás" }
+    },
+    "submitLabel": "Enviar consulta",
+    "sendingLabel": "Enviando...",
+    "successMessage": "¡Gracias! Recibí tu consulta y te respondo a la brevedad.",
+    "errorMessage": "No se pudo enviar. Probá de nuevo o escribime por WhatsApp.",
+    "honeypotLabel": "No completar"
+  },
+
+  "whatsappButton": {
+    "text": "¿Consultas? Escribime",
+    "ariaLabel": "Escribir por WhatsApp"
+  },
+
+  "footer": {
+    "navigationTitle": "Secciones",
+    "navigationAriaLabel": "Pie de página",
+    "contactTitle": "Contacto",
+    "text": "Ing. Pereira Salvador. Consultoría en ingeniería."
+  }
+}
