@@ -5,8 +5,8 @@
 // script-src con 'unsafe-inline', se recorre todo el HTML generado en out/, se calcula el SHA-256
 // exacto de cada script inline ejecutable y se habilitan solo esos hashes.
 //
-// La CSP se define solo acá (una única fuente). netlify.toml conserva los headers que no dependen
-// del HTML generado (seguridad fija y cache de /images/*).
+// Es el único archivo de headers del sitio (formato _headers de Cloudflare Pages): además de la CSP
+// incluye los headers de seguridad fijos y el cache de /images/* y /_next/static/*.
 import { createHash } from "node:crypto";
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
@@ -78,21 +78,42 @@ const directives = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self'",
   "font-src 'self'",
-  "connect-src 'self'",
+  // API de Web3Forms: recibe los envíos del formulario de contacto (ContactForm.tsx)
+  "connect-src 'self' https://api.web3forms.com",
   "form-action 'self'",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "object-src 'none'",
 ];
 
+const csp = `  Content-Security-Policy: ${directives.join("; ")}`;
+// Cloudflare Pages ignora las líneas de _headers de más de 2000 caracteres: mejor fallar que publicar sin CSP
+if (csp.length > 2000) {
+  console.error(`✗ La línea de la CSP tiene ${csp.length} caracteres (máximo de Cloudflare Pages: 2000)`);
+  process.exit(1);
+}
+
 const headers = [
   "# Generado por scripts/generate-headers.mjs en cada build — no editar a mano.",
   "# CSP con los hashes de los scripts inline del HTML de out/ (cambian con cada build).",
   "/*",
-  `  Content-Security-Policy: ${directives.join("; ")}`,
+  csp,
+  "  X-Content-Type-Options: nosniff",
+  "  X-Frame-Options: DENY",
+  "  Referrer-Policy: strict-origin-when-cross-origin",
+  "  Permissions-Policy: camera=(), microphone=(), geolocation=()",
+  "  Strict-Transport-Security: max-age=31536000",
+  "",
+  "# Imágenes: cache de una semana (si se reemplaza una foto con el mismo nombre, se actualiza sola).",
+  "/images/*",
+  "  Cache-Control: public, max-age=604800",
+  "",
+  "# JS, CSS y fuentes de Next: el nombre lleva un hash del contenido, se cachean para siempre.",
+  "/_next/static/*",
+  "  Cache-Control: public, max-age=31536000, immutable",
   "",
 ].join("\n");
 
 writeFileSync(join(outDir, "_headers"), headers);
-console.log(`✓ out/_headers generado (CSP con ${hashes.size} hash(es) de script):`);
+console.log(`✓ out/_headers generado (headers + CSP con ${hashes.size} hash(es) de script):`);
 for (const line of report) console.log(line);

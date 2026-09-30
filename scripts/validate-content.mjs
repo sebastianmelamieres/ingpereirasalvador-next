@@ -2,6 +2,7 @@
 // Complementa a TypeScript con lo que los tipos no pueden verificar:
 // que las imágenes existan, que las anclas apunten a secciones reales
 // y que no haya campos con nombres mal escritos en las listas.
+// También verifica la clave de Web3Forms del formulario de contacto.
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -67,24 +68,19 @@ if (!/^\d+$/.test(whatsapp.number)) errors.push(`contact.whatsapp.number: solo d
 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push(`contact.email: formato inválido ("${email}")`);
 if (!/^https:\/\/[^/]+$/.test(content.site.url)) errors.push(`site.url: debe ser https y sin barra final`);
 
-// Formulario de contacto: el gemelo estático para Netlify (public/__forms.html) debe tener
-// el mismo nombre y los mismos campos que el formulario visible (ContactForm.tsx)
-const namesIn = (source) => new Set([...source.matchAll(/\bname="([^"]+)"/g)].map((m) => m[1]));
-const formSource = readFileSync(join(root, "src/components/sections/ContactForm.tsx"), "utf8");
-const twinSource = readFileSync(join(root, "public/__forms.html"), "utf8").match(/<form[\s\S]*?<\/form>/)?.[0] ?? "";
-const formNames = namesIn(formSource);
-const formName = formSource.match(/const FORM_NAME = "([^"]+)"/)?.[1];
-formNames.delete("form-name");
-const twinNames = namesIn(twinSource);
-if (!formName || !twinSource.includes(`<form name="${formName}"`)) {
-  errors.push(`public/__forms.html: falta el formulario "${formName}" (debe coincidir con ContactForm.tsx)`);
+// Formulario de contacto (Web3Forms): la clave pública se incrusta en el JS al compilar.
+// En Cloudflare Pages (CF_PAGES=1) sin clave el build falla; en local solo avisa (el form da error al enviar).
+for (const file of [".env.local", ".env"]) {
+  if (existsSync(join(root, file))) process.loadEnvFile(join(root, file));
 }
-twinNames.delete(formName);
-for (const name of formNames) {
-  if (!twinNames.has(name)) errors.push(`public/__forms.html: falta el campo "${name}" de ContactForm.tsx`);
-}
-for (const name of twinNames) {
-  if (!formNames.has(name)) errors.push(`public/__forms.html: el campo "${name}" no existe en ContactForm.tsx`);
+const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY ?? "";
+const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+if (!accessKey) {
+  const message = "NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY no está definida: el formulario de contacto no va a enviar";
+  if (process.env.CF_PAGES) errors.push(message);
+  else console.warn(`⚠ ${message} (ver README, sección Cloudflare Pages)`);
+} else if (!uuid.test(accessKey)) {
+  errors.push(`NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY: formato inválido (se espera la clave de Web3Forms, un UUID)`);
 }
 
 if (errors.length > 0) {

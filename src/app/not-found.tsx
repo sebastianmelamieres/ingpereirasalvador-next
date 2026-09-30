@@ -9,7 +9,7 @@ import { siteContent } from "@/content";
 const arcsClasses = "pointer-events-none absolute w-[clamp(160px,24vw,340px)] opacity-95 max-sm:w-[120px]";
 
 /**
- * Página 404 (static export: out/404.html, que Netlify sirve para rutas inexistentes).
+ * Página 404 (static export: out/404.html, que Cloudflare Pages sirve para rutas inexistentes).
  * Next le agrega <meta name="robots" content="noindex"> automáticamente.
  * El <title> se declara acá porque la metadata de la home está en page.tsx y no se hereda.
  */

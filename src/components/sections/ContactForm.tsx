@@ -5,16 +5,17 @@ import { Button } from "@/components/ui/Button";
 import type { ContactForm as ContactFormContent } from "@/content";
 
 /**
- * Formulario de contacto (Netlify Forms).
+ * Formulario de contacto (Web3Forms: los envíos llegan por mail, sin backend propio).
  *
- * Netlify detecta el formulario en su gemelo estático public/__forms.html (con data-netlify).
- * Este formulario NO lleva data-netlify: así Netlify no reescribe su HTML y React lo hidrata tal cual.
- * Netlify asocia cada envío por el campo oculto "form-name".
+ * Se envía por fetch (JSON) a la API de Web3Forms con la clave pública del formulario, que se toma de
+ * NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY en el build (Next la incrusta en el JS). Web3Forms usa el campo
+ * "email" como reply-to y descarta los envíos con "botcheck" marcado (honeypot).
  *
- * IMPORTANTE: el nombre del formulario y los `name` de los campos deben coincidir con
- * public/__forms.html (lo verifica scripts/validate-content.mjs en cada build).
+ * El dominio de la API está habilitado en la CSP (connect-src, scripts/generate-headers.mjs).
  */
-const FORM_NAME = "contacto";
+const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
+const ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY ?? "";
+const EMAIL_SUBJECT = "Nueva consulta desde el sitio web";
 
 type Status = "idle" | "sending" | "success" | "error";
 
@@ -34,24 +35,28 @@ export function ContactForm({ content, serviceOptions }: ContactFormProps) {
   const [status, setStatus] = useState<Status>("idle");
   const { fields } = content;
 
-  // Envío sin recargar la página (igual que js/main.js). Solo se llega acá si pasó la validación nativa.
+  // Envío sin recargar la página. Solo se llega acá si pasó la validación nativa.
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     setStatus("sending");
 
-    const body = new URLSearchParams();
-    for (const [name, value] of new FormData(form)) {
-      if (typeof value === "string") body.append(name, value);
-    }
+    // "botcheck" solo viaja si un bot lo marcó (un checkbox sin marcar no entra en el FormData)
+    const data = Object.fromEntries(new FormData(form));
 
     try {
-      const response = await fetch("/", {
+      if (!ACCESS_KEY) throw new Error("Falta NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY");
+      const response = await fetch(WEB3FORMS_ENDPOINT, {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: body.toString(),
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          ...data,
+          access_key: ACCESS_KEY,
+          subject: EMAIL_SUBJECT,
+        }),
       });
-      if (!response.ok) throw new Error(String(response.status));
+      const result = (await response.json().catch(() => ({}))) as { success?: boolean };
+      if (!response.ok || !result.success) throw new Error(String(response.status));
       form.reset();
       setStatus("success");
     } catch {
@@ -65,17 +70,15 @@ export function ContactForm({ content, serviceOptions }: ContactFormProps) {
 
   return (
     <form
-      name={FORM_NAME}
       method="POST"
       onSubmit={handleSubmit}
       data-reveal={0}
       className="grid gap-4 rounded-card border border-white/25 bg-[#3f58a0] p-[clamp(1.5rem,4vw,2.25rem)] text-white"
     >
-      <input type="hidden" name="form-name" value={FORM_NAME} />
-      {/* Trampa para bots (honeypot): fuera de pantalla; si llega completo, Netlify lo marca como spam */}
+      {/* Trampa para bots (honeypot): fuera de pantalla; si llega marcado, Web3Forms descarta el envío */}
       <p className="absolute left-[-9999px]" aria-hidden="true">
         <label>
-          {content.honeypotLabel} <input name="empresa-web" tabIndex={-1} autoComplete="off" className={inputClasses} />
+          {content.honeypotLabel} <input type="checkbox" name="botcheck" tabIndex={-1} autoComplete="off" />
         </label>
       </p>
 

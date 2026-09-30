@@ -4,7 +4,7 @@ Versión Next.js del sitio web de **Ing. Pereira Salvador** (consultoría en ing
 proyecto original `ingpereirasalvador-web` (HTML + CSS + JS generado con `build.js`), manteniendo su diseño
 y comportamiento.
 
-Se publica como sitio estático (`output: "export"`) en Netlify: no hay servidor, API routes ni funciones.
+Se publica como sitio estático (`output: "export"`) en Cloudflare Pages: no hay servidor, API routes ni funciones.
 
 ## Stack
 
@@ -12,14 +12,15 @@ Se publica como sitio estático (`output: "export"`) en Netlify: no hay servidor
 - TypeScript (modo `strict`)
 - Tailwind CSS v4 (configuración en CSS con `@theme`, sin `tailwind.config.js`)
 - ESLint (`eslint-config-next`)
-- Netlify Forms para el formulario de contacto
+- [Web3Forms](https://web3forms.com) para el formulario de contacto (los envíos llegan por mail)
 
 ## Requisitos e instalación
 
-Node.js 20.9 o superior (Netlify usa Node 22, ver `netlify.toml`).
+Node.js 20.12 o superior (Cloudflare Pages usa Node 22, fijado en `.node-version`).
 
 ```bash
 npm install
+cp .env.example .env.local   # y completar la clave de Web3Forms (ver abajo)
 npm run dev        # http://localhost:3000
 ```
 
@@ -36,10 +37,10 @@ npm run build      # valida el contenido y genera el sitio estático en out/
 | Comando         | Qué hace                                                           |
 | --------------- | ------------------------------------------------------------------ |
 | `npm run dev`   | Servidor de desarrollo en http://localhost:3000                    |
-| `npm run build` | Build de producción; genera el sitio estático en `out/` (y `out/_headers` con la CSP) |
+| `npm run build` | Build de producción; genera el sitio estático en `out/` (y `out/_headers` con headers y CSP) |
 | `npm run start` | Sirve `out/` localmente (vía `npx serve`) para probar el build     |
 | `npm run lint`  | ESLint                                                             |
-| `npm run validate:content` | Valida `src/content/site.json` y el formulario (también corre antes de `build`) |
+| `npm run validate:content` | Valida `src/content/site.json` y la clave del formulario (también corre antes de `build`) |
 
 > `next start` no funciona con static export, por eso `start` sirve la carpeta `out/`.
 
@@ -68,23 +69,34 @@ Todos los textos están en **`src/content/site.json`** (fuente de contenido): se
 
 Convenciones: imágenes con ruta absoluta desde `public/` (`/images/...`); servicios con foto cuadrada ~800×800 WebP y encuadre opcional con `imagePosition` (ej. `"80% center"`); con `projects.items` vacío (`[]`) la sección Trabajos y su enlace no se muestran (la sección todavía no está migrada: cargar proyectos hace fallar la validación hasta migrarla); `contact.area` vacío no se muestra. Las fotos actuales de servicios son de Unsplash (uso libre, sin atribución).
 
-## Netlify
+## Cloudflare Pages
 
-Configurado en `netlify.toml`: build `npm run build`, publica `out/`.
+Proyecto de Pages conectado al repo de GitHub (cada push publica: la rama de producción en el dominio
+principal y las demás en un link de preview `<rama>.<proyecto>.pages.dev`). Configuración del build:
 
-Headers:
+- Framework preset: **Next.js (Static HTML Export)** (o *None*). No usar el preset *Next.js* a secas: ese es para
+  SSR con `@cloudflare/next-on-pages` y este sitio es estático.
+- Build command: `npm run build` · Build output directory: `out`
+- Node 22, tomado de `.node-version`.
+- Variable de entorno `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` (Settings → Variables and Secrets), en Production y Preview.
+  Sin ella el build falla en Cloudflare (`validate-content.mjs` lo verifica cuando `CF_PAGES=1`).
 
-- `netlify.toml`: headers de seguridad fijos (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`,
-  `Permissions-Policy`, `Strict-Transport-Security`) y cache de una semana para `/images/*`.
-  El cache de `/_next/static/*` lo pone el adaptador de Next en Netlify.
-- `out/_headers`: la **Content-Security-Policy**, generada en cada build (`postbuild`) por
-  `scripts/generate-headers.mjs`. Recorre el HTML de `out/` y habilita por hash SHA-256 los scripts inline
-  (los de Next cambian con cada build), sin `'unsafe-inline'` en `script-src`. No editar a mano ni repetir la CSP
-  en `netlify.toml`.
+Headers: `out/_headers` (formato de Cloudflare Pages), generado en cada build (`postbuild`) por
+`scripts/generate-headers.mjs`. No se edita a mano. Contiene:
 
-Formulario de contacto (Netlify Forms, sin backend propio):
+- La **Content-Security-Policy**: recorre el HTML de `out/` y habilita por hash SHA-256 los scripts inline
+  (los de Next cambian con cada build), sin `'unsafe-inline'` en `script-src`. `connect-src` habilita la API de Web3Forms.
+  Cloudflare ignora líneas de más de 2000 caracteres: si la CSP las supera, el build falla.
+- Headers de seguridad fijos (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`,
+  `Permissions-Policy`, `Strict-Transport-Security`).
+- Cache de una semana para `/images/*` y cache permanente (`immutable`) para `/_next/static/*`.
 
-- Netlify detecta el formulario `contacto` en `public/__forms.html` (copia estática con `data-netlify`).
-- El formulario visible (`src/components/sections/ContactForm.tsx`) no lleva `data-netlify` para que Netlify no reescriba el HTML que hidrata React; envía por `fetch('/')` (urlencoded) con el campo oculto `form-name`.
-- Los `name` de los campos deben coincidir en ambos archivos: lo verifica `npm run validate:content`.
-- El envío real solo se puede probar en un deploy de Netlify (en local no hay quien reciba el POST).
+La página 404 es `out/404.html`, que Cloudflare Pages sirve sola para rutas inexistentes.
+
+Formulario de contacto (Web3Forms, sin backend propio):
+
+- La clave (*access key*) se genera gratis en web3forms.com con el mail que va a recibir las consultas. Es pública
+  (queda en el JS del sitio), pero conviene no commitearla: va en `.env.local` y en la variable de Cloudflare.
+- `src/components/sections/ContactForm.tsx` envía por `fetch` (JSON) a `https://api.web3forms.com/submit`.
+  El campo `email` queda como reply-to del mail; el honeypot es el checkbox oculto `botcheck`.
+- El envío se puede probar también en local (`npm run dev`), con la clave en `.env.local`.
