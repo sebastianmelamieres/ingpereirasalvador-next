@@ -3,7 +3,7 @@
     "name": "Ing. Pereira Salvador",
     "url": "https://ingpereirasalvador.com",
     "title": "Ing. Pereira Salvador | Consultoría en Ingeniería",
-    "description": "Consultoría en ingeniería en Uruguay: proyectos hidráulicos, acondicionamiento térmico, diseño mecánico, habilitaciones de Bomberos (DNB), avales técnicos vehiculares y sistemas contra incendio.",
+    "description": "Consultoría en ingeniería en Uruguay: proyectos hidráulicos, acondicionamiento térmico, diseño mecánico, habilitaciones de Bomberos (DNB) y sistemas contra incendio.",
     "shareDescription": "Proyectos hidráulicos, habilitaciones DNB, sistemas contra incendio, diseño mecánico y más.",
     "locale": "es_UY",
     "country": "Uruguay",
@@ -84,11 +84,6 @@
         "title": "Habilitaciones DNB",
         "description": "Gestión completa de la habilitación ante la Dirección Nacional de Bomberos: proyecto, trámite y seguimiento.",
         "image": "/images/services/habilitacion.webp"
-      },
-      {
-        "title": "Avales técnicos vehiculares",
-        "description": "Informes y avales técnicos firmados por ingeniero para modificaciones y regularización de vehículos.",
-        "image": "/images/services/vehicular.webp"
       },
       {
         "title": "Sistemas hidráulicos contra incendio",
