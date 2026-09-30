@@ -16,7 +16,6 @@ export function About() {
             alt={about.title}
             width={400}
             height={400}
-            loading="eager"
             data-reveal={0}
             // Recorte 4:5 con el encuadre corrido a la derecha (72%), como el original
             className="aspect-[4/5] w-full rounded-card object-cover object-[72%_center] max-md:max-w-[360px]"

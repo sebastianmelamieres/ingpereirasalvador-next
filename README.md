@@ -36,7 +36,7 @@ npm run build      # valida el contenido y genera el sitio estático en out/
 | Comando         | Qué hace                                                           |
 | --------------- | ------------------------------------------------------------------ |
 | `npm run dev`   | Servidor de desarrollo en http://localhost:3000                    |
-| `npm run build` | Build de producción; genera el sitio estático en `out/`            |
+| `npm run build` | Build de producción; genera el sitio estático en `out/` (y `out/_headers` con la CSP) |
 | `npm run start` | Sirve `out/` localmente (vía `npx serve`) para probar el build     |
 | `npm run lint`  | ESLint                                                             |
 | `npm run validate:content` | Valida `src/content/site.json` y el formulario (también corre antes de `build`) |
@@ -71,6 +71,16 @@ Convenciones: imágenes con ruta absoluta desde `public/` (`/images/...`); servi
 ## Netlify
 
 Configurado en `netlify.toml`: build `npm run build`, publica `out/`.
+
+Headers:
+
+- `netlify.toml`: headers de seguridad fijos (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`,
+  `Permissions-Policy`, `Strict-Transport-Security`) y cache de una semana para `/images/*`.
+  El cache de `/_next/static/*` lo pone el adaptador de Next en Netlify.
+- `out/_headers`: la **Content-Security-Policy**, generada en cada build (`postbuild`) por
+  `scripts/generate-headers.mjs`. Recorre el HTML de `out/` y habilita por hash SHA-256 los scripts inline
+  (los de Next cambian con cada build), sin `'unsafe-inline'` en `script-src`. No editar a mano ni repetir la CSP
+  en `netlify.toml`.
 
 Formulario de contacto (Netlify Forms, sin backend propio):
 

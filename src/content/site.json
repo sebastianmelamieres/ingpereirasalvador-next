@@ -192,6 +192,13 @@
     "ariaLabel": "Escribir por WhatsApp"
   },
 
+  "notFound": {
+    "eyebrow": "Error 404",
+    "title": "Página no encontrada",
+    "text": "La página que buscás no existe o cambió de dirección.",
+    "homeCta": "Volver al inicio"
+  },
+
   "footer": {
     "navigationTitle": "Secciones",
     "navigationAriaLabel": "Pie de página",

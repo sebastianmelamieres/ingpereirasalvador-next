@@ -24,7 +24,6 @@ export function Footer() {
             alt={site.name}
             width={160}
             height={46}
-            loading="eager"
             className="h-10 w-auto"
           />
           <p className="mt-4">{hero.eyebrow}</p>

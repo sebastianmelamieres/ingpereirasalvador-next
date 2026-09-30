@@ -190,6 +190,15 @@ export interface WhatsAppButton {
   ariaLabel: string;
 }
 
+/** Página 404 (src/app/not-found.tsx). */
+export interface NotFoundPage {
+  eyebrow: string;
+  title: string;
+  text: string;
+  /** Texto del botón que vuelve a la página principal. */
+  homeCta: string;
+}
+
 export interface Footer {
   navigationTitle: string;
   navigationAriaLabel: string;
@@ -212,6 +221,7 @@ export interface SiteContent {
   contactSection: ContactSection;
   contactForm: ContactForm;
   whatsappButton: WhatsAppButton;
+  notFound: NotFoundPage;
   footer: Footer;
 }
 

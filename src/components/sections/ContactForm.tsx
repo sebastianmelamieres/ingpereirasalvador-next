@@ -68,6 +68,7 @@ export function ContactForm({ content, serviceOptions }: ContactFormProps) {
       name={FORM_NAME}
       method="POST"
       onSubmit={handleSubmit}
+      data-reveal={0}
       className="grid gap-4 rounded-card border border-white/25 bg-[#3f58a0] p-[clamp(1.5rem,4vw,2.25rem)] text-white"
     >
       <input type="hidden" name="form-name" value={FORM_NAME} />
@@ -129,6 +130,7 @@ export function ContactForm({ content, serviceOptions }: ContactFormProps) {
         type="submit"
         variant="formSubmit"
         disabled={status === "sending"}
+        data-reveal={0}
         // Un <button> no hereda el interlineado del texto (line-height: normal), como en el original
         className="justify-self-start leading-[normal] max-sm:w-full max-sm:justify-self-stretch"
       >

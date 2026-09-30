@@ -108,6 +108,14 @@ html [data-reveal-state="visible"] {
   transform: none;
 }
 
+/* Antes de que ScrollReveal se inicialice, el script inline del <head> marca <html data-reveal-pending>
+   (solo si el reveal va a funcionar) y los elementos ya arrancan ocultos, en la misma posición que
+   data-reveal-state="hidden": así no se ven un instante antes de ocultarse (carga directa en un ancla). */
+html[data-reveal-pending] [data-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
 /* ---------- Accesibilidad: movimiento reducido ---------- */
 @media (prefers-reduced-motion: reduce) {
   html {

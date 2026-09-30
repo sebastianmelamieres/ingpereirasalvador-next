@@ -1,6 +1,8 @@
+import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { ScrollReveal } from "@/components/layout/ScrollReveal";
+import { SocialMetaTags } from "@/components/layout/SocialMetaTags";
 import { About } from "@/components/sections/About";
 import { Contact } from "@/components/sections/Contact";
 import { Hero } from "@/components/sections/Hero";
@@ -8,15 +10,19 @@ import { Process } from "@/components/sections/Process";
 import { Services } from "@/components/sections/Services";
 import { FloatingWhatsApp } from "@/components/ui/FloatingWhatsApp";
 import { siteContent } from "@/content";
+import { professionalServiceJsonLd, serializeJsonLd } from "@/content/structured-data";
 
-// El formulario de contacto y su botón de envío también aparecen al hacer scroll (orden 0),
-// pero se seleccionan desde acá para no tocar ContactForm.tsx.
-const contactId = siteContent.contactSection.id;
-const revealExtraTargets = [`#${contactId} form`, `#${contactId} form button[type="submit"]`];
+// Title y description (los del original), desde site.json
+export const metadata: Metadata = {
+  title: siteContent.site.title,
+  description: siteContent.site.description,
+};
 
 export default function Home() {
   return (
     <>
+      {/* Canonical, Open Graph y Twitter (React los ubica en el <head>) */}
+      <SocialMetaTags />
       <Header />
       <main>
         <Hero />
@@ -27,7 +33,12 @@ export default function Home() {
       </main>
       <Footer />
       <FloatingWhatsApp />
-      <ScrollReveal extraTargets={revealExtraTargets} />
+      <ScrollReveal />
+      {/* Datos estructurados para Google (schema.org), generados en el build a partir de site.json */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(professionalServiceJsonLd()) }}
+      />
     </>
   );
 }
