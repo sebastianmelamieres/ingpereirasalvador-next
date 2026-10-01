@@ -69,6 +69,19 @@ Todos los textos están en **`src/content/site.json`** (fuente de contenido): se
 
 Convenciones: imágenes con ruta absoluta desde `public/` (`/images/...`); servicios con foto cuadrada ~800×800 WebP y encuadre opcional con `imagePosition` (ej. `"80% center"`); con `projects.items` vacío (`[]`) la sección Trabajos y su enlace no se muestran (la sección todavía no está migrada: cargar proyectos hace fallar la validación hasta migrarla); `contact.area` vacío no se muestra. Las fotos actuales de servicios son de Unsplash (uso libre, sin atribución).
 
+## Publicar en el hosting de Médanos (cPanel)
+
+El dominio `ingpereirasalvador.com` (sitio y mail) está en Médanos. Para publicar ahí:
+
+1. Con la clave de Web3Forms en `.env.local`, correr `npm run build` (genera `out/`, incluido `out/.htaccess`).
+2. Comprimir el **contenido** de `out/` en un zip (con los archivos ocultos `.htaccess`; `_headers` no hace falta).
+3. En cPanel → Administrador de archivos → `public_html`: descargar una copia de lo que haya, borrarlo,
+   subir el zip, extraerlo ahí mismo y borrar el zip.
+
+`out/.htaccess` lo genera `scripts/generate-headers.mjs` (los mismos headers y CSP que `_headers`, en formato
+Apache/LiteSpeed, más la redirección a HTTPS y la página 404). Hay otros dos `.htaccess` para el cache de
+`/images/` y `/_next/static/`. Cada build cambia los hashes de la CSP: siempre se sube el `.htaccess` del mismo build.
+
 ## Cloudflare Pages
 
 Proyecto de Pages conectado al repo de GitHub (cada push publica: la rama de producción en el dominio

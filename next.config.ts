@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Static export: `next build` genera el sitio estático en `out/` (deploy en Netlify).
+  // Static export: `next build` genera el sitio estático en `out/` (deploy en Cloudflare Pages o en hosting Apache).
   // Implica: sin API Routes, middleware/proxy, Server Actions, rewrites/redirects/headers ni ISR.
   output: "export",
 

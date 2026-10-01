@@ -5,10 +5,13 @@
 // script-src con 'unsafe-inline', se recorre todo el HTML generado en out/, se calcula el SHA-256
 // exacto de cada script inline ejecutable y se habilitan solo esos hashes.
 //
-// Es el único archivo de headers del sitio (formato _headers de Cloudflare Pages): además de la CSP
-// incluye los headers de seguridad fijos y el cache de /images/* y /_next/static/*.
+// Genera los headers en dos formatos con el mismo contenido (CSP, headers de seguridad fijos y cache de
+// /images/* y /_next/static/*):
+// - out/_headers: formato de Cloudflare Pages.
+// - out/.htaccess (+ uno en out/images/ y otro en out/_next/static/ para el cache): formato Apache/LiteSpeed,
+//   para el hosting compartido (Médanos, cPanel). Incluye además la redirección a HTTPS y la página 404.
 import { createHash } from "node:crypto";
-import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -115,5 +118,61 @@ const headers = [
 ].join("\n");
 
 writeFileSync(join(outDir, "_headers"), headers);
+
+// --- Apache / LiteSpeed (.htaccess) ---
+const htaccess = [
+  // Bloque que cPanel (Médanos) tiene en public_html/.htaccess: versión de PHP del hosting. El sitio no usa PHP,
+  // pero en public_html quedan archivos del hosting (teraweb.php) que sí: se conserva tal cual.
+  "# php -- BEGIN cPanel-generated handler, do not edit",
+  '# Set the "ea-php73" package as the default "PHP" programming language.',
+  "<IfModule mime_module>",
+  "  AddHandler application/x-httpd-ea-php73 .php .php7 .phtml",
+  "</IfModule>",
+  "# php -- END cPanel-generated handler, do not edit",
+  "",
+  "# Generado por scripts/generate-headers.mjs en cada build — no editar a mano.",
+  "# Mismos headers que out/_headers (Cloudflare Pages), en formato Apache/LiteSpeed.",
+  "",
+  "Options -Indexes",
+  "ErrorDocument 404 /404.html",
+  "",
+  "# Forzar HTTPS",
+  "<IfModule mod_rewrite.c>",
+  "  RewriteEngine On",
+  "  RewriteCond %{HTTPS} !=on",
+  "  RewriteCond %{HTTP:X-Forwarded-Proto} !=https",
+  "  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]",
+  "</IfModule>",
+  "",
+  "<IfModule mod_headers.c>",
+  `  Header always set Content-Security-Policy "${directives.join("; ")}"`,
+  '  Header always set X-Content-Type-Options "nosniff"',
+  '  Header always set X-Frame-Options "DENY"',
+  '  Header always set Referrer-Policy "strict-origin-when-cross-origin"',
+  '  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"',
+  '  Header always set Strict-Transport-Security "max-age=31536000"',
+  "</IfModule>",
+  "",
+].join("\n");
+
+const cacheHtaccess = (value, comment) =>
+  [
+    "# Generado por scripts/generate-headers.mjs en cada build — no editar a mano.",
+    `# ${comment}`,
+    "<IfModule mod_headers.c>",
+    `  Header set Cache-Control "${value}"`,
+    "</IfModule>",
+    "",
+  ].join("\n");
+
+writeFileSync(join(outDir, ".htaccess"), htaccess);
+mkdirSync(join(outDir, "images"), { recursive: true });
+writeFileSync(join(outDir, "images", ".htaccess"), cacheHtaccess("public, max-age=604800", "Imágenes: cache de una semana."));
+mkdirSync(join(outDir, "_next", "static"), { recursive: true });
+writeFileSync(
+  join(outDir, "_next", "static", ".htaccess"),
+  cacheHtaccess("public, max-age=31536000, immutable", "JS, CSS y fuentes de Next (nombre con hash): cache permanente."),
+);
+console.log("✓ out/.htaccess generado (mismos headers, para hosting Apache/LiteSpeed)");
 console.log(`✓ out/_headers generado (headers + CSP con ${hashes.size} hash(es) de script):`);
 for (const line of report) console.log(line);
